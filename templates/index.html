@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>位置紀錄器</title>
+</head>
+<body>
+  <h1>📍 我的時間軸</h1>
+  <button onclick="recordLocation()">記錄目前位置</button>
+  <p id="status"></p>
+  <p id="permission-status" style="color: red;"></p> <!-- 顯示錯誤訊息的地方 -->
+
+  <script>
+    function recordLocation() {
+      if (!navigator.geolocation) {
+        document.getElementById("status").textContent = "❌ 瀏覽器不支援地理定位";
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(position => {
+        const data = {
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude
+        };
+
+        fetch('/save-location', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(result => {
+          document.getElementById("status").textContent = "✅ 位置已儲存！";
+          document.getElementById("permission-status").textContent = "";  // 清除錯誤訊息
+        });
+      }, error => {
+        const status = document.getElementById("status");
+        const permissionStatus = document.getElementById("permission-status");
+        
+        switch(error.code) {
+          case error.PERMISSION_DENIED:
+            status.textContent = "❌ 使用者拒絕定位權限。";
+            permissionStatus.textContent = "⚠️ 請允許存取位置以便儲存你的資料。";
+            break;
+          case error.POSITION_UNAVAILABLE:
+            status.textContent = "❌ 位置資訊無法取得。";
+            break;
+          case error.TIMEOUT:
+            status.textContent = "❌ 定位逾時。";
+            break;
+          default:
+            status.textContent = "❌ 無法取得位置，錯誤代碼：" + error.code;
+            break;
+        }
+      });
+    }
+  </script>
+</body>
+</html>
