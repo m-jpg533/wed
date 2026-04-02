@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <title>位置紀錄列表</title>
+</head>
+<body>
+  <h1>📍 歷史位置紀錄</h1>
+  <a href="/">⬅ 回首頁</a>
+  <ul>
+    {% for r in records %}
+      <li>
+        <strong>{{ r.timestamp }}</strong><br>
+        緯度: {{ r.latitude }}, 經度: {{ r.longitude }}<br>
+        {% if r.valid %}
+          <a href="https://www.google.com/maps?q={{ r.latitude }},{{ r.longitude }}" target="_blank">
+            ➡ 在 Google 地圖查看
+          </a>
+        {% else %}
+          ⚠️ 座標錯誤，無法顯示地圖
+        {% endif %}
+      </li>
+      <hr>
+    {% endfor %}
+  </ul>
+</body>
+</html> 
