@@ -6,11 +6,11 @@ import os
 app = Flask(__name__)
 
 # 資料庫路徑（避免 Render 出錯）
-DB_PATH = os.path.join(os.path.dirname(__file__), 'location.db')
+DB_PATH = os.path.join(os.path.dirname(__file__), 'location3.db')
 
 # 初始化資料庫
 def init_db():
-    conn = sqlite3.connect(DB_PATH)
+    conn = sqlite3.connect('location3.db')
     c = conn.cursor()
     c.execute('''
         CREATE TABLE IF NOT EXISTS locations (
