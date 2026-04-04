@@ -10,7 +10,7 @@ DB_PATH = os.path.join(os.path.dirname(__file__), 'location3.db')
 
 # 初始化資料庫
 def init_db():
-    conn = sqlite3.connect('location3.db')
+    conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
     c.execute('''
         CREATE TABLE IF NOT EXISTS locations (
