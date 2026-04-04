@@ -4,7 +4,7 @@ from datetime import datetime
 import os
 
 app = Flask(__name__)
-
+DB = "location3.db"
 # 資料庫路徑（避免 Render 出錯）
 DB_PATH = os.path.join(os.path.dirname(__file__), 'location3.db')
 
