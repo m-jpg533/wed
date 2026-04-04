@@ -4,7 +4,7 @@ from datetime import datetime
 import os
 
 app = Flask(__name__)
-DB = "location3.db"
+
 # 資料庫路徑（避免 Render 出錯）
 DB_PATH = os.path.join(os.path.dirname(__file__), 'location3.db')
 
@@ -44,7 +44,7 @@ def logs():
         })
 
     return render_template('logs.html', records=records)
-
+print("📂 DB路徑:", DB)
 @app.route('/save-location', methods=['POST'])
 def save_location():
     try:
@@ -69,7 +69,7 @@ def save_location():
         conn.close()
 
         return jsonify({'status': 'success'})
-
+print("📂 寫入DB:", DB)
     except Exception as e:
         print("❌ 錯誤：", e)
         return jsonify({'status': 'error', 'msg': str(e)})
