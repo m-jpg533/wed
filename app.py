@@ -4,9 +4,9 @@ import sqlite3
 from datetime import datetime
 import os
 from flask_cors import CORS
-CORS(app)
-app = Flask(__name__)
 
+app = Flask(__name__)
+CORS(app)
 # ✅ 統一資料庫路徑（最重要🔥）
 DB = os.path.join(os.path.dirname(__file__), 'location3.db')
 
@@ -38,7 +38,7 @@ def index():
 def logs():
     print("📂 讀取DB:", DB)
 
-    conn = sqlite3.connect(DB)
+    conn = sqlite3.connect(DB, check_same_thread=False)
     c = conn.cursor()
     c.execute('SELECT latitude, longitude, timestamp FROM locations ORDER BY id DESC')
     data = c.fetchall()
@@ -70,7 +70,7 @@ def save_location():
 
         timestamp = datetime.now().isoformat()
 
-        conn = sqlite3.connect(DB)
+        conn = sqlite3.connect(DB, check_same_thread=False)
         c = conn.cursor()
         c.execute(
             'INSERT INTO locations (latitude, longitude, timestamp) VALUES (?, ?, ?)',
