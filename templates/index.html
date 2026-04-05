@@ -23,49 +23,59 @@ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 let marker;
 
-// 📡 自動追蹤位置
-navigator.geolocation.watchPosition(
-  function(position) {
+// 📤 傳送位置 + 更新地圖
+function sendPosition(position) {
 
-    const lat = position.coords.latitude;
-    const lng = position.coords.longitude;
+  const lat = position.coords.latitude;
+  const lng = position.coords.longitude;
 
-    console.log("📡 位置:", lat, lng);
-    document.getElementById("status").innerText = "📍 定位中: " + lat + ", " + lng;
+  console.log("📡 位置:", lat, lng);
 
-    // 📍 更新地圖標記
-    if (marker) {
-      marker.setLatLng([lat, lng]);
-    } else {
-      marker = L.marker([lat, lng]).addTo(map);
-    }
+  // 顯示文字
+  document.getElementById("status").innerText =
+    "📍 " + lat.toFixed(6) + ", " + lng.toFixed(6);
 
-    map.setView([lat, lng], 16);
-
-    // 📤 傳送到後端（一定用完整網址）
-    fetch('https://wed-hvh5.onrender.com/save-location', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        latitude: lat,
-        longitude: lng
-      })
-    })
-    .then(res => res.json())
-    .then(data => console.log("✅ 已送出", data))
-    .catch(err => console.log("❌ 錯誤", err));
-
-  },
-  function(error) {
-    console.log("❌ GPS錯誤", error);
-    document.getElementById("status").innerText = "❌ 定位失敗";
-  },
-  {
-    enableHighAccuracy: true,
-    maximumAge: 0,
-    timeout: 5000
+  // 📍 地圖標記
+  if (marker) {
+    marker.setLatLng([lat, lng]);
+  } else {
+    marker = L.marker([lat, lng]).addTo(map);
   }
-);
+
+  map.setView([lat, lng], 16);
+
+  // 📤 傳送到後端（一定用完整網址🔥）
+  fetch('https://wed-hvh5.onrender.com/save-location', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      latitude: lat,
+      longitude: lng
+    })
+  })
+  .then(res => res.json())
+  .then(data => console.log("✅ 已送出", data))
+  .catch(err => console.log("❌ 傳送失敗", err));
+}
+
+// ❌ 錯誤處理
+function errorHandler(err) {
+  console.log("❌ GPS錯誤:", err);
+  document.getElementById("status").innerText = "❌ 定位失敗";
+}
+
+// 🚀 啟動定位（第一次）
+navigator.geolocation.getCurrentPosition(sendPosition, errorHandler, {
+  enableHighAccuracy: true
+});
+
+// 🔥 強制每5秒抓一次（解決不更新問題）
+setInterval(() => {
+  navigator.geolocation.getCurrentPosition(sendPosition, errorHandler, {
+    enableHighAccuracy: true
+  });
+}, 5000);
+
 </script>
 
 </body>
